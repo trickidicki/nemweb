@@ -4,21 +4,16 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker 
 from datetime import timedelta, datetime
 import flask 
-import mysql.connector
 import urllib.request
 import urllib.parse
 from io import BytesIO 
 import re 
 import configparser
-from flask.ext.compress import Compress
-
-#import newrelic.agent
+from flask_compress import Compress
 import os
 
 #nem works on Brisbane time
 os.environ['TZ'] = 'Australia/Brisbane'
-
-#newrelic.agent.initialize('/etc/newrelic.ini')
 
 compress = Compress()
  
@@ -107,9 +102,6 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine, autocommit=True)
 session = Session()
 
-
-
-
 def dictfetchall(cursor):
     # Returns all rows from a cursor as a list of dicts
     desc = cursor.description
@@ -182,13 +174,14 @@ def notice(id):
     
     return flask.Response(data, mimetype="text/html")
 
-	
 @app.route("/")
 def index():
     return render_template('index.html')
+
 @app.route("/stations")
 def stations():
     return render_template('stations.html')
+
 @app.route("/station_overview")
 def station_overview():
     return render_template('station_overview.html')
@@ -196,10 +189,10 @@ def station_overview():
 @app.route("/env")
 def env():
     return render_template('env.html')
+
 @app.route("/history")
 def history():
     return render_template('historic.html')
-
 
 @app.route("/stations-data")
 def stationsdata():
@@ -341,4 +334,5 @@ def interconnectupdate():
 
 	
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    webconfig = config["webserver"]
+    app.run(host=webconfig.get("host", "0.0.0.0"), port=webconfig.get("port", 5000))
