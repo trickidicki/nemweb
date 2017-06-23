@@ -12,23 +12,12 @@ from io import BytesIO, TextIOWrapper
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from twitter import *
 from zipfile import ZipFile
+from pathlib import PurePath
+from urllib.parse import urlparse
 
 config = configparser.ConfigParser()
 config.read("config.cfg")
-
-def setupTwitter():
-     return(Twitter(auth=OAuth(
-	config["twitter"]["access_token_key"],
-	config["twitter"]["access_token_secret"],
-	config["twitter"]["consumer_key"],
-	config["twitter"]["consumer_secret"]
-)))
-
-def sendTwit(message):
-     twitterapi = setupTwitter()
-     twitterapi.statuses.update(status=message)
 
 urls = {
 	"base": "http://www.nemweb.com.au/",
@@ -36,7 +25,7 @@ urls = {
 	"dispatchis": "http://www.nemweb.com.au/Reports/CURRENT/DispatchIS_Reports/",
 	"notices": "http://www.nemweb.com.au/Reports/CURRENT/Market_Notice/",
 	"scada": "http://www.nemweb.com.au/Reports/CURRENT/Dispatch_SCADA/",
-        "co2": "http://www.nemweb.com.au/reports/current/cdeii/"
+    "co2": "http://www.nemweb.com.au/reports/current/cdeii/"
 }
 
 engine = create_engine(config["database"]["dbstring"])
@@ -116,21 +105,36 @@ def urlDownloaded(url):
     else:
         return False
 
-def listCO2Files():
-    co2urls=[]
-    indexpage = urllib.request.urlopen(urls['co2']).read()
-    soup = BeautifulSoup(indexpage)
+def downloadUrl(url):
+    parse = urlparse(url)
+    print("Downloading " + parse.scheme + "://" + parse.hostname + "/.../" + PurePath(parse.path).name, end='\r', flush = True)
+    return urllib.request.urlopen(url).read()
+
+def listFiles(url, requiredFilenameString = None):
+    pageurls=[]
+    indexpage = downloadUrl(url)
+    soup = BeautifulSoup(indexpage, "html.parser")
     for link in soup.find_all('a'):
-        url = link.get('href').lstrip("/")
-        if url[-4:] == ".CSV" and "CO2EII_AVAILABLE_GENERATORS" in url and urlDownloaded(url) == False:
-            co2urls.append(urls['base'] + url)
-    return co2urls
+        url = link.get('href')
+        parts = PurePath(url)
+        if not parts.suffix:
+            continue
+        if requiredFilenameString:
+            if requiredFilenameString not in parts.stem:
+                continue
+        if parts.suffix.lower() in [".zip", ".csv"]:
+            if urlDownloaded(url) == False:
+                pageurls.append(urls['base'] + url)
+    return pageurls
+
+def listCO2Files():
+    return listFiles(urls['co2'], "CO2EII_AVAILABLE_GENERATORS")
 
 def processCO2():
-    for url in listCO2Files():
+    urls = listCO2Files()
+    for url in urls:
         try:
-                print("Downloading " + url)
-                data = urllib.request.urlopen(url).read()
+                data = downloadUrl(url)
                 data = data.decode('utf-8').split("\n")
                 csvfile = csv.reader(data)
                 date = ""
@@ -162,20 +166,12 @@ def processCO2():
 
 #returns list of P5 files as an array of urls
 def listP5Files():
-    p5urls=[]
-    indexpage = urllib.request.urlopen(urls['p5']).read()
-    soup = BeautifulSoup(indexpage)
-    for link in soup.find_all('a'):
-        url = link.get('href').lstrip("/")
-        if url[-4:] == ".zip" and urlDownloaded(url) == False:
-            p5urls.append(urls['base'] + url)
-    return p5urls
+     return listFiles(urls['p5'])
 
 def processP5():
     for url in listP5Files():
         try:
-                print("Downloading " + url)
-                files = ZipFile(BytesIO(urllib.request.urlopen(url).read()))
+                files = ZipFile(BytesIO(downloadUrl(url)))
                 data = files.read(files.namelist()[0])
                 data = data.decode('utf-8').split("\n")
                 csvfile = csv.reader(data)
@@ -203,20 +199,12 @@ def processP5():
             print(traceback.format_exc())
         
 def listDispatchISFiles():
-    dispatchisurls=[]
-    indexpage = urllib.request.urlopen(urls['dispatchis']).read()
-    soup = BeautifulSoup(indexpage)
-    for link in soup.find_all('a'):
-        url = link.get('href').lstrip("/")
-        if url[-4:] == ".zip"  and urlDownloaded(url) == False:
-            dispatchisurls.append(urls['base'] + url)
-    return dispatchisurls
+    return listFiles(urls['dispatchis'])
     
 def processDispatchIS():
     for url in listDispatchISFiles():
         try:
-                print("Downloading " + url)
-                files = ZipFile(BytesIO(urllib.request.urlopen(url).read()))
+                files = ZipFile(BytesIO(downloadUrl(url)))
                 data = files.read(files.namelist()[0])
                 data = data.decode('utf-8').split("\n")
                 csvfile = csv.reader(data)
@@ -268,20 +256,13 @@ def processDispatchIS():
 
 #returns list of P5 files as an array of urls
 def listNotices():
-    noticesurls=[]
-    indexpage = urllib.request.urlopen(urls['notices']).read()
-    soup = BeautifulSoup(indexpage)
-    for link in soup.find_all('a'):
-        url = link.get('href').lstrip("/")
-        if url[-1] != "/" and urlDownloaded(url) == False:
-            noticesurls.append(urls['base'] + url)
-    return noticesurls
+    raise NotImplementedError('Check how / is handled') 
+    return listFiles(urls['notices'])
 
 def processNotices():
     for url in listNotices():
         try:
-            print("Downloading " + url)
-            data = urllib.request.urlopen(url).read().decode('iso-8859-1','ignore')
+            data = downloadUrl(url).decode('iso-8859-1','ignore')
             data = data.split("\n")
             amount = ""
             for line in data:
@@ -326,19 +307,12 @@ def processNotices():
             print(traceback.format_exc())
 
 def listSCADAFiles():
-    scadaurls=[]
-    indexpage = urllib.request.urlopen(urls['scada']).read()
-    soup = BeautifulSoup(indexpage)
-    for link in soup.find_all('a'):
-        url = link.get('href').lstrip("/")
-        if url[-4:] == ".zip" and urlDownloaded(url) == False:
-            scadaurls.append(urls['base'] + url)
-    return scadaurls
+    return listFiles(urls['scada'])
+
 def processSCADA():
     for url in listSCADAFiles():
         try:
-                print("Downloading " + url)
-                files = ZipFile(BytesIO(urllib.request.urlopen(url).read()))
+                files = ZipFile(BytesIO(downloadUrl(url)))
                 data = files.read(files.namelist()[0])
                 data = data.decode('utf-8').split("\n")
                 csvfile = csv.reader(data)
@@ -362,14 +336,19 @@ def processSCADA():
             session.merge(Downloads(url=url))
             session.commit()
             print(traceback.format_exc())
+
+def doProcess(func):
+    print("Processing " + func.__name__ )
+    func()
+    print("Done")
+
         
-while 1:
-    try:
-            processCO2()
-            processP5()
-            processDispatchIS()
-            processNotices()
-            processSCADA()
-            time.sleep(30)
-    except Exception as e:
-            print(traceback.format_exc())
+try:
+    doProcess(processCO2)
+    doProcess(processP5)
+    doProcess(processDispatchIS)
+    doProcess(processSCADA)
+    doProcess(processNotices)
+    #time.sleep(30)
+except Exception as e:
+    print(traceback.format_exc())

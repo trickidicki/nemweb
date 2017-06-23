@@ -12,13 +12,13 @@ import re
 import configparser
 from flask.ext.compress import Compress
 
-import newrelic.agent
+#import newrelic.agent
 import os
 
 #nem works on Brisbane time
 os.environ['TZ'] = 'Australia/Brisbane'
 
-newrelic.agent.initialize('/etc/newrelic.ini')
+#newrelic.agent.initialize('/etc/newrelic.ini')
 
 compress = Compress()
  
