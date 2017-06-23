@@ -1,4 +1,4 @@
-# taken from http://www.aemo.com.au/About-the-Industry/Registration/Current-Registration-and-Exemption-lists
+# taken from https://www.aemo.com.au/Electricity/National-Electricity-Market-NEM/Participant-information/Current-participants/Current-registration-and-exemption-lists
 insert into stationdata values('BAPS',12.85,'Hydro','Water','Renewable','Hydro - Gravity','AGL Hydro Partnership','Banimboola Power Station')
 insert into stationdata values('BAPS',,'Hydro','Water','Renewable','Hydro - Gravity','AGL Hydro Partnership','Banimboola Power Station');
 insert into stationdata values('MCKAY1',300,'Hydro','Water','Renewable','Hydro - Gravity','AGL Hydro Partnership','Bogong / Mckay Power Station');

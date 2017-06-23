@@ -13,8 +13,9 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from zipfile import ZipFile
-from pathlib import PurePath
+from pathlib import PurePath, Path
 from urllib.parse import urlparse
+import csv
 
 config = configparser.ConfigParser()
 config.read("config.cfg")
@@ -337,6 +338,39 @@ def processSCADA():
             session.commit()
             print(traceback.format_exc())
 
+def processStations():
+    def mk_zero(s):
+        s = str(s).strip()
+        return s if s else "0"
+    try:
+        localdata = config["localdata"]
+        csvfilelocation = localdata.get("stations", "stations.csv")
+        fileexists = Path(csvfilelocation).is_file()
+        with open(csvfilelocation) as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if row["DUID"] == '-':
+                    continue
+                print(row["DUID"])
+                if row["Reg Cap (MW)"].strip() in ['-', '_']:
+                    row["Reg Cap (MW)"] = 0
+                station = {
+                    "DUID": row["DUID"].strip(),
+                    "regcap": mk_zero(row["Reg Cap (MW)"]),
+                    "FuelSource": row["Fuel Source - Primary"].strip(),
+                    "FuelSourceDescriptior": row["Fuel Source - Descriptor"].strip(),
+                    "Tech": row["Technology Type - Primary"].strip(),
+                    "TechDescription": row["Technology Type - Descriptor"].strip(),
+                    "Participant": row["Participant"].strip(),
+                    "StationName": row["Station Name"].strip()
+                    }
+                stationobject = stationdata(**station)
+                session.merge(stationobject)
+                session.commit()
+
+    except Exception as e:
+        print(traceback.format_exc())
+
 def doProcess(func):
     print("Processing " + func.__name__ )
     func()
@@ -344,6 +378,7 @@ def doProcess(func):
 
         
 try:
+    doProcess(processStations)
     doProcess(processCO2)
     doProcess(processP5)
     doProcess(processDispatchIS)

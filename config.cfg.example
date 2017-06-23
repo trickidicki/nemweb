@@ -1,8 +1,14 @@
 [database]
 #dbstring=mysql+mysqlconnector://username:password@localhost/dbname
 #dbstring=sqlite:///test.db
-[twitter]
-consumer_key=EXAMPLE
-consumer_secret=EXAMPLE
-access_token_key=EXAMPLE
-access_token_secret=EXAMPLE
+
+[localdata]
+# stations data from Excel sheet downloaded from
+# https://www.aemo.com.au/Electricity/National-Electricity-Market-NEM/Participant-information/Current-participants/Current-registration-and-exemption-lists
+# Sheet name: "NEM Registration and Exemption "
+# Saved as local CSV file
+stations: "stations.csv"
+
+[webserver]
+host: 0.0.0.0
+port: 5000
