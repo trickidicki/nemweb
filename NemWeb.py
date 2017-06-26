@@ -378,7 +378,7 @@ def doProcess(func):
 
         
 try:
-    doProcess(processStations)
+    #doProcess(processStations)
     doProcess(processCO2)
     doProcess(processP5)
     doProcess(processDispatchIS)

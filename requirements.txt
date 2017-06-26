@@ -9,7 +9,6 @@ flask-compress
 itsdangerous
 Jinja2
 lxml
-#MarkupSafe
 pexpect
 psutil
 pyasn1
@@ -17,3 +16,4 @@ pycparser
 requests
 SQLAlchemy
 pathlib
+flask-babel

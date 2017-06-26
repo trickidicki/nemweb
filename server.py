@@ -11,19 +11,22 @@ import re
 import configparser
 from flask_compress import Compress
 import os
+from pathlib import Path
 
 #nem works on Brisbane time
 os.environ['TZ'] = 'Australia/Brisbane'
 
 compress = Compress()
- 
-app = Flask(__name__) 
-app.debug = False
-Compress(app)
 
 config = configparser.ConfigParser()
 config.read("config.cfg")
 
+webconfig = config["webserver"]
+ 
+app = Flask(__name__) 
+dbg = webconfig.getboolean('debug', False)
+app.debug = dbg
+Compress(app)
 
 engine = create_engine(config["database"]["dbstring"], pool_recycle=3600)  
 Base = declarative_base()  
@@ -177,6 +180,10 @@ def notice(id):
 @app.route("/")
 def index():
     return render_template('index.html')
+
+@app.route("/map")
+def map():
+    return render_template('map.html')
 
 @app.route("/stations")
 def stations():
@@ -332,7 +339,12 @@ def interconnectupdate():
                
     return flask.jsonify(update=export)
 
-	
 if __name__ == "__main__":
-    webconfig = config["webserver"]
-    app.run(host=webconfig.get("host", "0.0.0.0"), port=webconfig.get("port", 5000))
+    extra_dirs = ['templates','static',]
+    extra_files = extra_dirs[:]
+    for extra_dir in extra_dirs:
+        for filename in Path(extra_dir).glob("**/*.*"):
+            if Path.is_file(filename):
+                extra_files.append(filename)
+                print("Watching %s for changes" % (filename))
+    app.run(extra_files=extra_files, host=webconfig.get("host", "0.0.0.0"), port=webconfig.get("port", 5000))
