@@ -22,11 +22,19 @@
                             <div class="input-group-addon"><i class="fa fa-search"></i></div>
                             <input type="text" class="form-control" placeholder="Search" ng-model="searchTerm">
                         </div>
+                        <div class="input-group">
+                            <select class="form-control" placeholder="select" ng-model="powerType">
+                                <option value="coal">Coal</option>
+                                <option value="gas">Gas</option>
+                                <option value="wind">Wind</option>
+                                <option value="solar">Solar</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
                     </div>
                 </form>
             </div>
             <table class="table table-bordered table-striped">
-                <thead>
                 <th>
                     <a href="#" ng-click="sortType = 'StationName'; sortReverse = !sortReverse">
                         Station Name
@@ -62,7 +70,6 @@
                         <span ng-show="sortType == 'SCADAVALUE' && sortReverse" class="fa fa-caret-up"></span>
                     </a>
                 </th>
-                </thead>
                 {% raw %}
                 <tr ng-click="getDUIDHistory(x.DUID, $event)" ng-repeat="x in results | toArray | orderBy:sortType:sortReverse | filter:searchTerm" ng-if="x.SCADAVALUE || x.SCADAVALUE==0">
                     <td ng-if="x.StationName">{{ x.StationName }} ({{ x.DUID }})</td>

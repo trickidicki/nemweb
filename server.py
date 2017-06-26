@@ -111,71 +111,71 @@ def dictfetchall(cursor):
     return [dict(zip([col[0] for col in desc], row)) 
             for row in cursor.fetchall()]
 
-def prettyNotice(noticeText):
-    graph_url = False
-    card = ""
-    notice_ref = False
-    try:
-        data = noticeText.split("\n")
-        unit = False
-        notice_time = False
-        notice_ref = False
-        for line in data:
-            if "Unit:" in line:
-                unit = line.split(":",1)[-1].strip()
-            if "Duration:" in line:
-                notice_time = line.split(" to ")[-1].strip()
-                notice_time = datetime.strptime(notice_time, "%d/%m/%Y %H:%M")
-            if "External Reference" in line:
-                notice_ref = line.split(":",1)[-1].strip()
-        if unit and notice_time and notice_ref:
-            s = session.query(DispatchSCADA).filter(DispatchSCADA.SETTLEMENTDATE > notice_time - timedelta(hours=1)).filter(DispatchSCADA.SETTLEMENTDATE < notice_time +  timedelta(minutes=15)).filter(DispatchSCADA.DUID == unit)
-            x_date = []
-            x_value = []
-            for item in s:
-                item = item.as_dict()
-                x_date.append(item['SETTLEMENTDATE'].strftime("%H:%M"))
-                x_value.append(str(item['SCADAVALUE']))
-                #item['SETTLEMENTDATE'] = str(item['SETTLEMENTDATE'])
+#def prettyNotice(noticeText):
+#    graph_url = False
+#    card = ""
+#    notice_ref = False
+#    try:
+#        data = noticeText.split("\n")
+#        unit = False
+#        notice_time = False
+#        notice_ref = False
+#        for line in data:
+#            if "Unit:" in line:
+#                unit = line.split(":",1)[-1].strip()
+#            if "Duration:" in line:
+#                notice_time = line.split(" to ")[-1].strip()
+#                notice_time = datetime.strptime(notice_time, "%d/%m/%Y %H:%M")
+#            if "External Reference" in line:
+#                notice_ref = line.split(":",1)[-1].strip()
+#        if unit and notice_time and notice_ref:
+#            s = session.query(DispatchSCADA).filter(DispatchSCADA.SETTLEMENTDATE > notice_time - timedelta(hours=1)).filter(DispatchSCADA.SETTLEMENTDATE < notice_time +  timedelta(minutes=15)).filter(DispatchSCADA.DUID == unit)
+#            x_date = []
+#            x_value = []
+#            for item in s:
+#                item = item.as_dict()
+#                x_date.append(item['SETTLEMENTDATE'].strftime("%H:%M"))
+#                x_value.append(str(item['SCADAVALUE']))
+#                #item['SETTLEMENTDATE'] = str(item['SETTLEMENTDATE'])
 
-                # SCADAVALUE
-            graph_url = "https://image-charts.com/chart?chs=560x300&cht=lc&chds=a&chm=N,000000,0,-1,11&chg=1,1,10,10&chdl="+unit+"%20%28MW%29&chd=t:"
-            graph_url += ",".join(x_value) + "&chxl=0:%7C" + urllib.parse.quote("|".join(x_date))+"%7C&chxt=x,x,y,y"
-            #return flask.jsonify(results=export)
-    except: #annoying but we don't want to hold anything up if we fail '
-        pass
-    imgtag = ""
-    if graph_url:
-        imgtag = "<img src=\"" +graph_url+ "\" />"
-    if notice_ref and graph_url:
-        card = "<meta name=\"twitter:card\" content=\"summary_large_image\">"
-        card += "<meta name=\"twitter:site\" content=\"@au_nem\">"
-        card += "<meta name=\"twitter:creator\" content=\"@au_nem\">"
-        card += "<meta name=\"twitter:image\" content=\""+ graph_url +"\">"
-        card += "<meta name=\"twitter:title\" content=\"NEM MARKET NOTICE\">"
-        card += "<meta name=\"twitter:description\" content=\""+ notice_ref +"\">"
-    noticeText = re.sub(r"\r?\n-+\r?\nEND OF REPORT\r?\n-+", r"", noticeText)
-    noticeText = re.sub(r"-+\r?\n(.+)\r?\n-+\r?\n", r"\n<h1>\1</h1>", noticeText)
-    noticeText = re.sub(r"\r?\n-+\r?\n", r"\n<hr>", noticeText)
-    noticeText = re.sub(r"\n([^\n\r:]+):\r?\n", r"<h2>\1</h2>", noticeText)
-    noticeText = re.sub(r"\r?\n(.{3,15}):(.+)", r"\n<tr><td><b>\1 :</b></td><td>\2</td></tr>", noticeText)
-    noticeText = re.sub(r"((<tr>.+</tr>\r?\n)+)", r"<table>\1</table>", noticeText)
-    noticeText = re.sub(r"\r?\n\r?\n", r"\n<br>", noticeText)
-    noticeText = re.sub(r"\n(?!<)(.+)", r"\1<br>\n", noticeText)
-    noticeText = "<html><head>"+card+"<style>body {font-family: Sans-Serif;}</style></head><body>" + noticeText
-    noticeText = noticeText + imgtag + "</body></html>"
-    return noticeText
+#                # SCADAVALUE
+#            graph_url = "https://image-charts.com/chart?chs=560x300&cht=lc&chds=a&chm=N,000000,0,-1,11&chg=1,1,10,10&chdl="+unit+"%20%28MW%29&chd=t:"
+#            graph_url += ",".join(x_value) + "&chxl=0:%7C" + urllib.parse.quote("|".join(x_date))+"%7C&chxt=x,x,y,y"
+#            #return flask.jsonify(results=export)
+#    except: #annoying but we don't want to hold anything up if we fail '
+#        pass
+#    imgtag = ""
+#    if graph_url:
+#        imgtag = "<img src=\"" +graph_url+ "\" />"
+#    if notice_ref and graph_url:
+#        card = "<meta name=\"twitter:card\" content=\"summary_large_image\">"
+#        card += "<meta name=\"twitter:site\" content=\"@au_nem\">"
+#        card += "<meta name=\"twitter:creator\" content=\"@au_nem\">"
+#        card += "<meta name=\"twitter:image\" content=\""+ graph_url +"\">"
+#        card += "<meta name=\"twitter:title\" content=\"NEM MARKET NOTICE\">"
+#        card += "<meta name=\"twitter:description\" content=\""+ notice_ref +"\">"
+#    noticeText = re.sub(r"\r?\n-+\r?\nEND OF REPORT\r?\n-+", r"", noticeText)
+#    noticeText = re.sub(r"-+\r?\n(.+)\r?\n-+\r?\n", r"\n<h1>\1</h1>", noticeText)
+#    noticeText = re.sub(r"\r?\n-+\r?\n", r"\n<hr>", noticeText)
+#    noticeText = re.sub(r"\n([^\n\r:]+):\r?\n", r"<h2>\1</h2>", noticeText)
+#    noticeText = re.sub(r"\r?\n(.{3,15}):(.+)", r"\n<tr><td><b>\1 :</b></td><td>\2</td></tr>", noticeText)
+#    noticeText = re.sub(r"((<tr>.+</tr>\r?\n)+)", r"<table>\1</table>", noticeText)
+#    noticeText = re.sub(r"\r?\n\r?\n", r"\n<br>", noticeText)
+#    noticeText = re.sub(r"\n(?!<)(.+)", r"\1<br>\n", noticeText)
+#    noticeText = "<html><head>"+card+"<style>body {font-family: Sans-Serif;}</style></head><body>" + noticeText
+#    noticeText = noticeText + imgtag + "</body></html>"
+#    return noticeText
 
-@app.route("/notice/<id>")
-def notice(id):
-    url = "http://www.nemweb.com.au/Reports/CURRENT/Market_Notice/" + id
-    try:
-        data = urllib.request.urlopen(url).read().decode('iso-8859-1','ignore')
-    except:
-        return flask.Response("Could not get nem notice")
-    data = prettyNotice(data)
+#@app.route("/notice/<id>")
+#def notice(id):
+#    url = "http://www.nemweb.com.au/Reports/CURRENT/Market_Notice/" + id
+#    try:
+#        data = urllib.request.urlopen(url).read().decode('iso-8859-1','ignore')
+#    except:
+#        return flask.Response("Could not get nem notice")
+#    data = prettyNotice(data)
     
-    return flask.Response(data, mimetype="text/html")
+#    return flask.Response(data, mimetype="text/html")
 
 @app.route("/")
 def index():
@@ -213,11 +213,8 @@ def stationsdata():
 @app.route("/co2-factor")
 def co2factor():
     export = {}
-#    s = session.query(CO2Factor).all()
-#    s = engine.execute("select * from CO2Factor where ReportDate = (select MAX(ReportDate) from CO2Factor);")
     s = session.query(CO2Factor).filter(CO2Factor.ReportDate == session.query(func.max(CO2Factor.ReportDate)))
     for item in s:
-#         item = dict(item.items())
          item = item.as_dict()
          export[item['DUID']] = item  
     return flask.jsonify(results=export)
@@ -229,7 +226,6 @@ def stationhistory(duid):
     export = {}
     for item in s:
          item = item.as_dict()
-         #item['SETTLEMENTDATE'] = str(item['SETTLEMENTDATE'])
          export[str(item['SETTLEMENTDATE'])]=item
     return flask.jsonify(results=export)
 
@@ -239,7 +235,6 @@ def stationsnow():
     export = {}
     for item in s:
          item = item.as_dict()
-         #item['SETTLEMENTDATE'] = str(item['SETTLEMENTDATE'])
          if item['DUID'] not in export:
              export[item['DUID']] = []
          export[item['DUID']].append(item)
@@ -249,22 +244,16 @@ def stationsnow():
 @app.route("/scada")
 def scada():
     export = {}
-#    s = engine.execute("select * from DispatchSCADA where SETTLEMENTDATE = (select MAX(SETTLEMENTDATE) from DispatchSCADA);")
     r = session.query(func.max(DispatchSCADA.SETTLEMENTDATE))[0][0]
     z = session.query(func.max(CO2Factor.ReportDate))[0][0]
     print(r)
     print(type(r))
     s = session.query(DispatchSCADA, CO2Factor.Factor).join(CO2Factor).filter(DispatchSCADA.SETTLEMENTDATE == r  ).filter(CO2Factor.ReportDate == z)
-#    s = session.query(DispatchSCADA, DispatchSCADA.SETTLEMENTDATE == func.max(DispatchSCADA.SETTLEMENTDATE)).all()
     for item in s:
-	 #cos = engine.execute("select * from CO2Factor where ReportDate = (select MAX(ReportDate) from CO2Factor);").all()
-#         item = dict(item.items())
          co2 = item[1]
          item = item[0].as_dict()
          try:
               item['CO2E'] = co2 * item['SCADAVALUE']
-#             cos = session.query(CO2Factor, CO2Factor.ReportDate == func.max(CO2Factor.ReportDate)).filter(CO2Factor.DUID == item['DUID']).all()
-#             item['CO2E'] = cos[0][0].Factor * item['SCADAVALUE']
          except:
              pass
          item['SETTLEMENTDATE'] = str(item['SETTLEMENTDATE'])
@@ -273,7 +262,15 @@ def scada():
 
 @app.route("/historic")
 def historic():
-    s = engine.execute("select `datetime`, `regionid`, avg(rrp), max(rrp), min(rrp), avg(demand), max(demand), min(demand),avg(generation), max(generation), min(generation) from dispatchIS GROUP BY HOUR(`datetime`),DAY(`datetime`),MONTH(`datetime`),YEAR(`datetime`), regionid;")
+    s = engine.execute("select `datetime`, `regionid`, avg(rrp), max(rrp), min(rrp), avg(demand), max(demand), min(demand),"
+                       "avg(generation), max(generation), min(generation) from dispatchIS "
+                      #"GROUP BY HOUR(`datetime`),DAY(`datetime`),MONTH(`datetime`),YEAR(`datetime`), regionid;")
+                      "GROUP BY "
+                      "strftime('%H',`datetime`), "
+                      "strftime('%dT',`datetime`), "
+                      "strftime('%m',`datetime`), "
+                      "strftime('%Y',`datetime`), "
+                      "regionid;")
     export = {}
     for item in s:
         item = dict(item.items())
@@ -281,6 +278,7 @@ def historic():
              export[str(item['datetime'])] = {}
         export[str(item['datetime'])][item['regionid']] = item
     return flask.jsonify(results=export)
+
 @app.route("/dispatch")
 def dispatch():
     s = session.query(dispatchIS).filter(dispatchIS.datetime > datetime.now() - timedelta(hours=168))
@@ -292,6 +290,7 @@ def dispatch():
          export[str(item['datetime'])][item['regionid']] = item
                
     return flask.jsonify(results=export)
+
 @app.route("/interconnect")
 def interconnectjson():
     s = session.query(interconnect).filter(interconnect.datetime > datetime.now() - timedelta(hours=24))
@@ -303,6 +302,7 @@ def interconnectjson():
          export[str(item['datetime'])][item['interconnectorid']] = item
                
     return flask.jsonify(results=export)
+
 @app.route("/predictions")
 def predictions():
     s = session.query(P5).filter(P5.datetime > datetime.now() - timedelta(minutes=5))
@@ -347,4 +347,4 @@ if __name__ == "__main__":
             if Path.is_file(filename):
                 extra_files.append(filename)
                 print("Watching %s for changes" % (filename))
-    app.run(extra_files=extra_files, host=webconfig.get("host", "0.0.0.0"), port=webconfig.get("port", 5000))
+    app.run(extra_files=extra_files, host=webconfig.get("host", "0.0.0.0"), port=webconfig.getint("port", 5000))

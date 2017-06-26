@@ -383,7 +383,7 @@ try:
     doProcess(processP5)
     doProcess(processDispatchIS)
     doProcess(processSCADA)
-    doProcess(processNotices)
+    #doProcess(processNotices)
     #time.sleep(30)
 except Exception as e:
     print(traceback.format_exc())

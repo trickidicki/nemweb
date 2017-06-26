@@ -3,69 +3,69 @@
 
 {% block content %}
 
-<div id="container" style="min-width: 310px; height: 600px; margin: 0 auto; padding-top: 80px;"></div>	
+<div id="container" style="min-width: 310px; height: 600px; margin: 0 auto; padding-top: 80px;"></div>
 <h2>Interconnect ID Key</h2>
 <ul>
-<li>NSW1-QLD1 NSW to QLD (Armidale to Tarong )</li>
-<li>VIC1-NSW1 VIC to NSW (Murray to Lower/Upper Tumut)</li>
-<li>V-SA VIC to SA (Heywood Interconnector)</li>
-<li>T-V-MNSP1 TAS to VIC (<a href="http://en.wikipedia.org/wiki/Basslink">Basslink</a>)</li>
-<li>V-S-MNSP1 VIC to SA (<a href="http://en.wikipedia.org/wiki/Murraylink">Murraylink</a></li>
-<li>N-Q-MNSP1 NSW to QLD (<a href="http://en.wikipedia.org/wiki/Terranora_interconnector">Terranora Interconnector</a>)</li>
+    <li>NSW1-QLD1 NSW to QLD (Armidale to Tarong )</li>
+    <li>VIC1-NSW1 VIC to NSW (Murray to Lower/Upper Tumut)</li>
+    <li>V-SA VIC to SA (Heywood Interconnector)</li>
+    <li>T-V-MNSP1 TAS to VIC (<a href="http://en.wikipedia.org/wiki/Basslink">Basslink</a>)</li>
+    <li>V-S-MNSP1 VIC to SA (<a href="http://en.wikipedia.org/wiki/Murraylink">Murraylink</a></li>
+    <li>N-Q-MNSP1 NSW to QLD (<a href="http://en.wikipedia.org/wiki/Terranora_interconnector">Terranora Interconnector</a>)</li>
 </ul>
 <script src="static/js/bootstrap.min.js"></script>
 <script>
-$(function () {
-$('#container').highcharts({
-        title: {
-            text: 'Nem Data',
-            x: -20 //center
-        },
-        subtitle: {
-            text: 'Source: nemweb.com.au',
-            x: -20
-        },
-        xAxis: {
-            type: 'datetime',
-            dateTimeLabelFormats: { // don't display the dummy year
-                month: '%e. %b',
-                year: '%b'
-            }
-        },
-yAxis:[{ 
-            labels: {
-                format: '${value:.2f}',
-            },
-            type: 'logarithmic',
-        maxPadding: 0,
-        minPadding: 0,
-            ceiling: 13500,
+    $(function () {
+        $('#container').highcharts({
             title: {
-                text: 'Price',
-            }
-        }, { 
-            title: {
-                text: 'MW',
+                text: 'Nem Data',
+                x: -20 //center
             },
-            labels: {
-                format: '{value:.2f} MW',
+            subtitle: {
+                text: 'Source: nemweb.com.au',
+                x: -20
             },
-            opposite: true
-        }],
-        tooltip: {
-            valueSuffix: 'MW'
-        },
-	oposite: true,        
-chart: {
-            zoomType: 'x',
-alignTicks: false
-        },
-        legend: {
-            borderWidth: 0
-},
+            xAxis: {
+                type: 'datetime',
+                dateTimeLabelFormats: { // don't display the dummy year
+                    month: '%e. %b',
+                    year: '%b'
+                }
+            },
+            yAxis: [{
+                labels: {
+                    format: '{value:.2f}',
+                },
+                type: 'logarithmic',
+                maxPadding: 0,
+                minPadding: 0,
+                ceiling: 13500,
+                title: {
+                    text: 'Power (MW)',
+                }
+            }, {
+                title: {
+                    text: 'MW',
+                },
+                labels: {
+                    format: '{value:.2f} MW',
+                },
+                opposite: true
+            }],
+            tooltip: {
+                valueSuffix: 'MW'
+            },
+            oposite: true,
+            chart: {
+                zoomType: 'x',
+                alignTicks: false
+            },
+            legend: {
+                borderWidth: 0
+            },
 
- rangeSelector: {
-            enabled: true,
+            rangeSelector: {
+                enabled: true,
                 buttons: [{
                     type: 'hour',
                     count: 24,
@@ -94,23 +94,23 @@ alignTicks: false
                     type: 'all',
                     text: 'All'
                 }],
-            inputDateFormat: '%Y-%m-%d %H:%M',
-            inputEditDateFormat: '%Y-%m-%d %H:%M',
-            // Custom parser to parse the %H:%M:%S.%L format
-            inputDateParser: function (value) {
-                value = value.split(/[:\.]/);
-                return Date.UTC(
-                    parseInt(value[0], 10),
-                    parseInt(value[1], 10),
-                    parseInt(value[2], 10),
-                    parseInt(value[3], 10),
-                    parseInt(value[4], 10)
-                );
+                inputDateFormat: '%Y-%m-%d %H:%M',
+                inputEditDateFormat: '%Y-%m-%d %H:%M',
+                // Custom parser to parse the %H:%M:%S.%L format
+                inputDateParser: function (value) {
+                    value = value.split(/[:\.]/);
+                    return Date.UTC(
+                        parseInt(value[0], 10),
+                        parseInt(value[1], 10),
+                        parseInt(value[2], 10),
+                        parseInt(value[3], 10),
+                        parseInt(value[4], 10)
+                    );
+                }
             }
-        }
 
- });
-});
+        });
+    });
 </script>
 <!-- <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
@@ -118,234 +118,246 @@ alignTicks: false
 <script src="http://code.highcharts.com/stock/highstock.js"></script>
 <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
 <script>
-regions = ["QLD1","NSW1","SA1","TAS1","VIC1"]
-interconnects = ["N-Q-MNSP1","NSW1-QLD1","T-V-MNSP1","V-S-MNSP1","V-SA","VIC1-NSW1"]
+    regions = ["QLD1", "NSW1", "SA1", "TAS1", "VIC1"]
+    interconnects = ["N-Q-MNSP1", "NSW1-QLD1", "T-V-MNSP1", "V-S-MNSP1", "V-SA", "VIC1-NSW1"]
 
 
-        // JSONP request
-        var jsonData = $.ajax({
-          url: '/dispatch',
-          dataType: 'json',
-        }).done(function (results) {
+    // JSONP request
+    var jsonData = $.ajax({
+        url: '/dispatch',
+        dataType: 'json',
+    }).done(function (results) {
 
-var	data = results['results']
-var price = {}
-var demand = {}
-var generation = {}
-for( i =0; i<regions.length; i++){
-var region = regions[i];
-price[region] = []
-generation[region] = []
-demand[region] = []
-}
+        var data = results['results']
+        var price = {}
+        var demand = {}
+        var generation = {}
+        for (i = 0; i < regions.length; i++) {
+            var region = regions[i];
+            price[region] = []
+            generation[region] = []
+            demand[region] = []
+        }
 
 
-for(i in data){
-var row = data[i];
-for( i =0; i<regions.length; i++){
-var region = regions[i];
-price[region].push([Date.parse(row[region]['datetime']),Math.max(row[region]['rrp'],0.001)]);
-generation[region].push([Date.parse(row[region]['datetime']),row[region]['generation']]);
-demand[region].push([Date.parse(row[region]['datetime']),row[region]['demand']]);
-lastdata = Date.parse(row[region]['datetime'])
-}
+        for (i in data) {
+            var row = data[i];
+            for (i = 0; i < regions.length; i++) {
+                var region = regions[i];
+                price[region].push([Date.parse(row[region]['datetime']), Math.max(row[region]['rrp'], 0.001)]);
+                generation[region].push([Date.parse(row[region]['datetime']), row[region]['generation']]);
+                demand[region].push([Date.parse(row[region]['datetime']), row[region]['demand']]);
+                lastdata = Date.parse(row[region]['datetime'])
+            }
+        };
 
-          };
+        for (i = 0; i < regions.length; i++) {
+            var region = regions[i]; // TODO clean this up
+            $('#container').highcharts().addSeries({
+                name: region + " $",
+                data: price[region], marker: { enabled: false },
+                dataGrouping: { approximation: "average", enabled: true, forced: false, units: [['hour', [1]]] }
+            });
+            $('#container').highcharts().addSeries({
+                name: region + " $",
+                linkedTo: ':previous',
+                dashStyle: 'shortdash',
+                color: $('#container').highcharts().series[i * 6].color,
+                marker: { enabled: false },
+                dataGrouping: { approximation: "average", enabled: true, forced: false, units: [['hour', [1]]] }
+            });
 
-for( i =0; i<regions.length; i++){
-var region = regions[i]; // TODO clean this up
-$('#container').highcharts().addSeries({name: region + " $", data: price[region],   marker : {enabled :false}  ,dataGrouping: {approximation: "average",enabled: true,forced: false,units: [['hour',[1]]]}});
-$('#container').highcharts().addSeries({name: region + " $", linkedTo: ':previous', dashStyle: 'shortdash', color: $('#container').highcharts().series[i*6].color ,   marker : {enabled :false} ,dataGrouping: {approximation: "average",enabled: true,forced: false,units: [['hour',[1]]]}});
+            $('#container').highcharts().addSeries({ yAxis: 1, visible: false, name: region + " generation", data: generation[region], marker: { enabled: false }, dataGrouping: { approximation: "average", enabled: true, forced: false, units: [['hour', [1]]] } });
+            $('#container').highcharts().addSeries({ yAxis: 1, visible: false, name: region + " generation", linkedTo: ':previous', dashStyle: 'shortdash', color: ':previous', color: $('#container').highcharts().series[i * 6 + 2].color, marker: { enabled: false }, dataGrouping: { approximation: "average", enabled: true, forced: false, units: [['hour', [1]]] } });
 
-$('#container').highcharts().addSeries({yAxis: 1, visible: false, name: region + " generation", data: generation[region],   marker : {enabled :false} ,dataGrouping: {approximation: "average",enabled: true,forced: false,units: [['hour',[1]]]}});
-$('#container').highcharts().addSeries({yAxis: 1, visible: false, name: region + " generation", linkedTo: ':previous',dashStyle: 'shortdash', color: ':previous' , color: $('#container').highcharts().series[i*6+2].color,   marker : {enabled :false} ,dataGrouping: {approximation: "average",enabled: true,forced: false,units: [['hour',[1]]]}});
+            $('#container').highcharts().addSeries({ yAxis: 1, visible: false, name: region + " demand", data: demand[region], marker: { enabled: false }, dataGrouping: { approximation: "average", enabled: true, forced: false, units: [['hour', [1]]] } });
+            $('#container').highcharts().addSeries({ yAxis: 1, visible: false, name: region + " demand", linkedTo: ':previous', dashStyle: 'shortdash', color: ':previous', color: $('#container').highcharts().series[i * 6 + 4].color, marker: { enabled: false }, dataGrouping: { approximation: "average", enabled: true, forced: false, units: [['hour', [1]]] } });
+        }
 
-$('#container').highcharts().addSeries({yAxis: 1, visible: false, name: region + " demand", data: demand[region],   marker : {enabled :false} ,dataGrouping: {approximation: "average",enabled: true,forced: false,units: [['hour',[1]]]}});
-$('#container').highcharts().addSeries({yAxis: 1, visible: false, name: region + " demand", linkedTo: ':previous',dashStyle: 'shortdash', color: ':previous', color: $('#container').highcharts().series[i*6+4].color,   marker : {enabled :false} ,dataGrouping: {approximation: "average",enabled: true,forced: false,units: [['hour',[1]]]}});
-}
-
-setInterval(requestUpdate, 30000);
-setInterval(requestPredictions, 30000);
-setInterval(requestIntUpdate, 30000);
-loadinterconnects();
-requestPredictions();
+        setInterval(requestUpdate, 30000);
+        setInterval(requestPredictions, 30000);
+        setInterval(requestIntUpdate, 30000);
+        loadinterconnects();
+        requestPredictions();
     });
 
 
-function loadurl(){
-if(location.hash.indexOf('#') != -1){
-var enable = location.hash.replace("#","").split(",")
-for (i=0; i<$('#container').highcharts().series.length;i++){$('#container').highcharts().series[i].hide()};
-enable.forEach(function (i) {$('#container').highcharts().series[i].show()})
-}
-}
+    function loadurl() {
+        if (location.hash.indexOf('#') != -1) {
+            var enable = location.hash.replace("#", "").split(",")
+            for (i = 0; i < $('#container').highcharts().series.length; i++) { $('#container').highcharts().series[i].hide() };
+            enable.forEach(function (i) { $('#container').highcharts().series[i].show() })
+        }
+    }
 
-$('#container').bind('mousedown', function() {setTimeout(updateUrl,1000)})
+    $('#container').bind('mousedown', function () { setTimeout(updateUrl, 1000) })
 
-function updateUrl(){
-var url = "";
-for (i=0; i<$('#container').highcharts().series.length;i++){
-if ($('#container').highcharts().series[i].visible){
-url = url + i + ","
-}
-};
-location.hash = url.substr(0,url.length-1)
-}
+    function updateUrl() {
+        var url = "";
+        for (i = 0; i < $('#container').highcharts().series.length; i++) {
+            if ($('#container').highcharts().series[i].visible) {
+                url = url + i + ","
+            }
+        };
+        location.hash = url.substr(0, url.length - 1)
+    }
 
 
-// interconnects
-function loadinterconnects(){
+    // interconnects
+    function loadinterconnects() {
         // JSONP request
         var jsonData = $.ajax({
-          url: '/interconnect',
-          dataType: 'json',
+            url: '/interconnect',
+            dataType: 'json',
         }).done(function (results) {
 
-var	data = results['results']
-var exportlimit = {}
-var importlimit = {}
-var mwflow = {}
-for( i =0; i<interconnects.length; i++){
-var interconnect = interconnects[i];
-exportlimit[interconnect] = []
-importlimit[interconnect] = []
-mwflow[interconnect] = []
-}
+            var data = results['results']
+            var exportlimit = {}
+            var importlimit = {}
+            var mwflow = {}
+            for (i = 0; i < interconnects.length; i++) {
+                var interconnect = interconnects[i];
+                exportlimit[interconnect] = []
+                importlimit[interconnect] = []
+                mwflow[interconnect] = []
+            }
 
 
-for(i in data){
-var row = data[i];
-for( i =0; i<interconnects.length; i++){
-var interconnect = interconnects[i];
-exportlimit[interconnect].push([Date.parse(row[interconnect]['datetime']),row[interconnect]['exportlimit']]);
-importlimit[interconnect].push([Date.parse(row[interconnect]['datetime']),row[interconnect]['importlimit']]);
-mwflow[interconnect].push([Date.parse(row[interconnect]['datetime']),row[interconnect]['mwflow']]);
-}
+            for (i in data) {
+                var row = data[i];
+                for (i = 0; i < interconnects.length; i++) {
+                    var interconnect = interconnects[i];
+                    exportlimit[interconnect].push([Date.parse(row[interconnect]['datetime']), row[interconnect]['exportlimit']]);
+                    importlimit[interconnect].push([Date.parse(row[interconnect]['datetime']), row[interconnect]['importlimit']]);
+                    mwflow[interconnect].push([Date.parse(row[interconnect]['datetime']), row[interconnect]['mwflow']]);
+                }
 
-          };
+            };
 
-for( i =0; i<interconnects.length; i++){
-var interconnect = interconnects[i]; // TODO clean this up
-$('#container').highcharts().addSeries({yAxis: 1, visible: false, name: interconnect + " import limit", data: importlimit[interconnect],   marker : {enabled :false} });
-$('#container').highcharts().addSeries({yAxis: 1, visible: false, name: interconnect + " export limit", data: exportlimit[interconnect],   marker : {enabled :false} });
-$('#container').highcharts().addSeries({yAxis: 1, visible: false, name: interconnect + " MW flow", data: mwflow[interconnect],   marker : {enabled :false} });
-}
+            for (i = 0; i < interconnects.length; i++) {
+                var interconnect = interconnects[i]; // TODO clean this up
+                $('#container').highcharts().addSeries({ yAxis: 1, visible: false, name: interconnect + " import limit", data: importlimit[interconnect], marker: { enabled: false } });
+                $('#container').highcharts().addSeries({ yAxis: 1, visible: false, name: interconnect + " export limit", data: exportlimit[interconnect], marker: { enabled: false } });
+                $('#container').highcharts().addSeries({ yAxis: 1, visible: false, name: interconnect + " MW flow", data: mwflow[interconnect], marker: { enabled: false } });
+            }
 
-lastdatainter = Date.parse(row[interconnect]['datetime'])
-loadurl()   
- });
-}
+            lastdatainter = Date.parse(row[interconnect]['datetime'])
+            loadurl()
+        });
+    }
 
 
 
-function requestUpdate(){
+    function requestUpdate() {
         var jsonData = $.ajax({
-          url: '/update',
-          dataType: 'json',
+            url: '/update',
+            dataType: 'json',
         }).done(function (update) {
-processUpdate(update['update']);
-})
+            processUpdate(update['update']);
+        })
 
-}
-function requestIntUpdate(){
+    }
+    function requestIntUpdate() {
         var jsonData = $.ajax({
-          url: '/interconnect-update',
-          dataType: 'json',
+            url: '/interconnect-update',
+            dataType: 'json',
         }).done(function (update) {
-processInterconnectUpdate(update['update']);
-})
+            processInterconnectUpdate(update['update']);
+        })
 
-}
+    }
 
-function processUpdate(data){
-var price = {}
-var demand = {}
-var generation = {}
-for( i =0; i<regions.length; i++){
-var region = regions[i];
-price[region] = []
-generation[region] = []
-demand[region] = []
-}
+    function processUpdate(data) {
+        var price = {}
+        var demand = {}
+        var generation = {}
+        for (i = 0; i < regions.length; i++) {
+            var region = regions[i];
+            price[region] = []
+            generation[region] = []
+            demand[region] = []
+        }
 
-for(i in data){
-var row = data[i];
-for( i =0; i<regions.length; i++){
-var region = regions[i];
-if (Date.parse(row[region]['datetime']) >  lastdata) {
-$('#container').highcharts().series[regions.indexOf(region)*6].addPoint([Date.parse(row[region]['datetime']),Math.max(row[region]['rrp'],0.001)],true, true);
-$('#container').highcharts().series[regions.indexOf(region)*6+2].addPoint([Date.parse(row[region]['datetime']),row[region]['generation']], true, true);
-$('#container').highcharts().series[regions.indexOf(region)*6+4].addPoint([Date.parse(row[region]['datetime']),row[region]['demand']], true, true);
-}
-}}
-lastdata = Date.parse(row[region]['datetime']);
-}
+        for (i in data) {
+            var row = data[i];
+            for (i = 0; i < regions.length; i++) {
+                var region = regions[i];
+                if (Date.parse(row[region]['datetime']) > lastdata) {
+                    $('#container').highcharts().series[regions.indexOf(region) * 6].addPoint([Date.parse(row[region]['datetime']), Math.max(row[region]['rrp'], 0.001)], true, true);
+                    $('#container').highcharts().series[regions.indexOf(region) * 6 + 2].addPoint([Date.parse(row[region]['datetime']), row[region]['generation']], true, true);
+                    $('#container').highcharts().series[regions.indexOf(region) * 6 + 4].addPoint([Date.parse(row[region]['datetime']), row[region]['demand']], true, true);
+                }
+            }
+        }
+        lastdata = Date.parse(row[region]['datetime']);
+    }
 
-function processInterconnectUpdate(data){
-var exportlimit = {}
-var importlimit = {}
-var mwflow = {}
-for( i =0; i<interconnects.length; i++){
-var interconnect = interconnects[i];
-exportlimit[interconnect] = []
-importlimit[interconnect] = []
-mwflow[interconnect] = []
-}
+    function processInterconnectUpdate(data) {
+        var exportlimit = {}
+        var importlimit = {}
+        var mwflow = {}
+        for (i = 0; i < interconnects.length; i++) {
+            var interconnect = interconnects[i];
+            exportlimit[interconnect] = []
+            importlimit[interconnect] = []
+            mwflow[interconnect] = []
+        }
 
-for(i in data){
-var row = data[i];
-for( i =0; i< interconnects.length; i++){
-var interconnect = interconnects[i];
-var regionoffset = regions.length*6;
-if (Date.parse(row[interconnect]['datetime']) >  lastdatainter) {
-$('#container').highcharts().series[interconnects.indexOf(interconnect)*3+regionoffset].addPoint([Date.parse(row[interconnect]['datetime']),row[interconnect]['importlimit']],true, true);
-$('#container').highcharts().series[interconnects.indexOf(interconnect)*3+1+regionoffset].addPoint([Date.parse(row[interconnect]['datetime']),row[interconnect]['exportimit']], true, true);
-$('#container').highcharts().series[interconnects.indexOf(interconnect)*3+2+regionoffset].addPoint([Date.parse(row[interconnect]['datetime']),row[interconnect]['mwflow']], true, true);
-}
-}}
-lastdatainter = Date.parse(row[interconnect]['datetime']);
-}
-
-
-
-
+        for (i in data) {
+            var row = data[i];
+            for (i = 0; i < interconnects.length; i++) {
+                var interconnect = interconnects[i];
+                var regionoffset = regions.length * 6;
+                if (Date.parse(row[interconnect]['datetime']) > lastdatainter) {
+                    $('#container').highcharts().series[interconnects.indexOf(interconnect) * 3 + regionoffset].addPoint([Date.parse(row[interconnect]['datetime']), row[interconnect]['importlimit']], true, true);
+                    $('#container').highcharts().series[interconnects.indexOf(interconnect) * 3 + 1 + regionoffset].addPoint([Date.parse(row[interconnect]['datetime']), row[interconnect]['exportimit']], true, true);
+                    $('#container').highcharts().series[interconnects.indexOf(interconnect) * 3 + 2 + regionoffset].addPoint([Date.parse(row[interconnect]['datetime']), row[interconnect]['mwflow']], true, true);
+                }
+            }
+        }
+        lastdatainter = Date.parse(row[interconnect]['datetime']);
+    }
 
 
-function requestPredictions(){
+
+
+
+
+    function requestPredictions() {
         var jsonData = $.ajax({
-          url: '/predictions',
-          dataType: 'json',
+            url: '/predictions',
+            dataType: 'json',
         }).done(function (update) {
-processPredictions(update['results']);
-})
+            processPredictions(update['results']);
+        })
 
-}
+    }
 
 
-function processPredictions(data){
-var price = {}
-var demand = {}
-var generation = {}
-for( i =0; i<regions.length; i++){
-var region = regions[i];
-price[region] = []
-generation[region] = []
-demand[region] = []
-$('#container').highcharts().series[regions.indexOf(region)*6+1].setData([], false);
-$('#container').highcharts().series[regions.indexOf(region)*6+3].setData([], false);
-$('#container').highcharts().series[regions.indexOf(region)*6+5].setData([], false);
-}
-	
-for(i in data){
-var row = data[i];
-for( i =0; i<regions.length; i++){
-var region = regions[i];
-$('#container').highcharts().series[regions.indexOf(region)*6+1].addPoint([Date.parse(row[region]['datetime']),Math.max(row[region]['rrp'],0.001)],false);
-$('#container').highcharts().series[regions.indexOf(region)*6+3].addPoint([Date.parse(row[region]['datetime']),row[region]['generation']],false);
-$('#container').highcharts().series[regions.indexOf(region)*6+5].addPoint([Date.parse(row[region]['datetime']),row[region]['demand']],false);
-}}
+    function processPredictions(data) {
+        var price = {}
+        var demand = {}
+        var generation = {}
+        for (i = 0; i < regions.length; i++) {
+            var region = regions[i];
+            price[region] = []
+            generation[region] = []
+            demand[region] = []
+            $('#container').highcharts().series[regions.indexOf(region) * 6 + 1].setData([], false);
+            $('#container').highcharts().series[regions.indexOf(region) * 6 + 3].setData([], false);
+            $('#container').highcharts().series[regions.indexOf(region) * 6 + 5].setData([], false);
+        }
 
-}
+        for (i in data) {
+            var row = data[i];
+            for (i = 0; i < regions.length; i++) {
+                var region = regions[i];
+                $('#container').highcharts().series[regions.indexOf(region) * 6 + 1].addPoint([Date.parse(row[region]['datetime']), Math.max(row[region]['rrp'], 0.001)], false);
+                $('#container').highcharts().series[regions.indexOf(region) * 6 + 3].addPoint([Date.parse(row[region]['datetime']), row[region]['generation']], false);
+                $('#container').highcharts().series[regions.indexOf(region) * 6 + 5].addPoint([Date.parse(row[region]['datetime']), row[region]['demand']], false);
+            }
+        }
+
+    }
 </script>
-
 {% endblock content %}
