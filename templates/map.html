@@ -24,12 +24,24 @@
         stroke-linecap: round;
         pointer-events: none;
     }
+    .svg-container {
+        display: inline-block;
+        position: relative;
+        width: 100%;
+        vertical-align: top;
+        overflow: hidden;
+    }
+    .svg-content-responsive {
+        display: inline-block;
+        position: absolute;
+        top: 10px;
+        left: 0;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div id="container">
-    <div id="info"><h1 id="state-name"></h1></div>
+<div id="container" class="svg-container">
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="http://d3js.org/topojson.v1.min.js"></script>
     <script>
@@ -51,14 +63,9 @@
             .projection(projection);
 
         var svg = d3.select("body").append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
-        svg.append("rect")
-            .attr("class", "background")
-            .attr("width", width)
-            .attr("height", height)
-            .on("click", clicked);
+            .attr("viewBox", "0 0 " + width + " " + height)
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .classed("svg-content-responsive", true);
 
         var g = svg.append("g");
 
@@ -76,7 +83,6 @@
                 .on('click', clicked)
                 .on('mouseover', function (d) {
                     var name = d.properties.STATE_NAME;
-                    return document.getElementById('state-name').innerHTML = name;
                 });
 
             g.append("path")
