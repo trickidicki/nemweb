@@ -16,6 +16,8 @@ from zipfile import ZipFile
 from pathlib import PurePath, Path
 from urllib.parse import urlparse
 import csv
+import argparse
+import pandas as pd
 
 config = configparser.ConfigParser()
 config.read("config.cfg")
@@ -25,7 +27,8 @@ urls = {
 	"p5": "http://www.nemweb.com.au/Reports/CURRENT/P5_Reports/",
 	"dispatchis": "http://www.nemweb.com.au/Reports/CURRENT/DispatchIS_Reports/",
 	"scada": "http://www.nemweb.com.au/Reports/CURRENT/Dispatch_SCADA/",
-    "co2": "http://www.nemweb.com.au/reports/current/cdeii/"
+    "co2": "http://www.nemweb.com.au/reports/current/cdeii/",
+    "stations": "https://www.aemo.com.au/-/media/Files/Electricity/NEM/Participant_Information/Current-Participants/NEM-Registration-and-Exemption-List.xls"
 }
 
 engine = create_engine(config["database"]["dbstring"])
@@ -69,6 +72,7 @@ class DUID(Base):
 class stationdata(Base):
      __tablename__ = 'stationdata'
      DUID = Column(String(255), primary_key=True)
+     regionid = Column(String(100), primary_key=True)
      regcap = Column(Float)
      FuelSource = Column(String(255))
      FuelSourceDescriptior = Column(String(255))
@@ -283,47 +287,60 @@ def processStations():
     def mk_zero(s):
         s = str(s).strip()
         return s if s else "0"
+    def get_str(item):
+        return str(item).strip()
     try:
-        localdata = config["localdata"]
-        csvfilelocation = localdata.get("stations", "stations.csv")
-        fileexists = Path(csvfilelocation).is_file()
-        with open(csvfilelocation) as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                if row["DUID"] == '-':
-                    continue
-                print(row["DUID"])
-                if row["Reg Cap (MW)"].strip() in ['-', '_']:
-                    row["Reg Cap (MW)"] = 0
-                station = {
-                    "DUID": row["DUID"].strip(),
-                    "regcap": mk_zero(row["Reg Cap (MW)"]),
-                    "FuelSource": row["Fuel Source - Primary"].strip(),
-                    "FuelSourceDescriptior": row["Fuel Source - Descriptor"].strip(),
-                    "Tech": row["Technology Type - Primary"].strip(),
-                    "TechDescription": row["Technology Type - Descriptor"].strip(),
-                    "Participant": row["Participant"].strip(),
-                    "StationName": row["Station Name"].strip()
-                    }
-                stationobject = stationdata(**station)
-                session.merge(stationobject)
-                session.commit()
+        #localdata = config["localdata"]
+        #csvfilelocation = localdata.get("stations", "stations.csv")
+        #fileexists = Path(csvfilelocation).is_file()
+        #with open(csvfilelocation) as csvfile:
+        data_xls = pd.read_excel(urls['stations'], 'Generators and Scheduled Loads')
+        for index, row  in data_xls.iterrows():
+            if(len(row) < 18):
+                continue
+            if row["DUID"] == '-':
+                continue
+            print(row["DUID"])
+            if str(row["Reg Cap (MW)"]).strip() in ['-', '_']:
+                row["Reg Cap (MW)"] = 0
+            station = {
+                "DUID": row["DUID"].strip(),
+                "regionid": row["Region"].strip(),
+                "regcap": mk_zero(row["Reg Cap (MW)"]),
+                "FuelSource": get_str(row["Fuel Source - Primary"]),
+                "FuelSourceDescriptior": get_str(row["Fuel Source - Descriptor"]),
+                "Tech": get_str(row["Technology Type - Primary"]),
+                "TechDescription": get_str(row["Technology Type - Descriptor"]),
+                "Participant": get_str(row["Participant"]),
+                "StationName": get_str(row["Station Name"])
+                }
+            stationobject = stationdata(**station)
+            session.merge(stationobject)
+            session.commit()
 
     except Exception as e:
         print(traceback.format_exc())
+
+    print("Done")
 
 def doProcess(func):
     print("Processing " + func.__name__ )
     func()
     print("Done")
 
-        
-try:
-    #doProcess(processStations)
-    doProcess(processCO2)
-    doProcess(processP5)
-    doProcess(processDispatchIS)
-    doProcess(processSCADA)
-    #time.sleep(30)
-except Exception as e:
-    print(traceback.format_exc())
+argparser = argparse.ArgumentParser()
+argparser.add_argument('-s', '--stations', help='Process stations list', action='store_true')
+args = argparser.parse_args()
+
+if args.stations:
+    processStations()
+else:
+    try:
+        #doProcess(processStations)
+        doProcess(processCO2)
+        doProcess(processP5)
+        doProcess(processDispatchIS)
+        doProcess(processSCADA)
+        #time.sleep(30)
+    except Exception as e:
+        print(traceback.format_exc())

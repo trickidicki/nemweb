@@ -17,3 +17,5 @@ requests
 SQLAlchemy
 pathlib
 flask-babel
+pandas
+xlrd

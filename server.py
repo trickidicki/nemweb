@@ -70,6 +70,7 @@ class interconnect(Base):
 class stationdata(Base):
      __tablename__ = 'stationdata'
      DUID = Column(String(255), primary_key=True)
+     regionid = Column(String(100), primary_key=True)
      regcap = Column(Float)
      FuelSource = Column(String(255))
      FuelSourceDescriptior = Column(String(255))
@@ -79,6 +80,7 @@ class stationdata(Base):
      StationName = Column(String(255))
      def as_dict(self):
           return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 class DispatchSCADA(Base):
      __tablename__ = 'DispatchSCADA'
      DUID = Column(String(255), primary_key=True)
