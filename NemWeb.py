@@ -255,58 +255,6 @@ def processDispatchIS():
             session.commit()
             print(traceback.format_exc())
 
-#returns list of P5 files as an array of urls
-def listNotices():
-    raise NotImplementedError('Check how / is handled') 
-    return listFiles(urls['notices'])
-
-def processNotices():
-    for url in listNotices():
-        try:
-            data = downloadUrl(url).decode('iso-8859-1','ignore')
-            data = data.split("\n")
-            amount = ""
-            for line in data:
-                if "Creation Date" in line:
-                    date = line.split(":",1)[-1].strip()
-                elif "Notice ID" in line:
-                    id = int(line.split(":",1)[-1].strip())
-                elif "External Reference" in line:
-                    notice = line.split(":",1)[-1].strip()
-                    notice = notice.replace("Reclassification ","#reclass ")
-                    notice = notice.replace("Non-Credible ","#non_cred ")
-                    notice = notice.replace("Event ","evnt ")
-                    notice = notice.replace("Queensland ","qld ")
-                    notice = notice.replace("Cancellation ","#cancel ")
-                    notice = notice.replace("Contingency ","#contigency ")
-                    notice = notice.replace("Cessation ","#cease ")
-                    notice = notice.replace("Revision ","#revise ")
-                    notice = notice.replace("Region "," ")
-                elif "Constraint:" in line:
-                    constraint = line.split(":",1)[-1].strip()
-                    constraint = constraint.replace("-", "_")
-                    if amount:
-                        notice = "#" + constraint + " " + amount + " - " + notice
-                    else:
-                        notice = "#" + constraint + " - " + notice
-                elif "Unit:" in line:
-                    unit = line.split(":",1)[-1].strip()
-                    twitterhandles = session.query(DUID).filter(DUID.id==unit)
-                    for handle in twitterhandles:
-                        notice = "@" + handle.twitter  +" " +notice
-                elif "Amount:" in line:
-                    amount = line.split(":",1)[-1].strip()
-            urlviewer=url.replace("http://www.nemweb.com.au/Reports/CURRENT/Market_Notice/","http://nem.mwheeler.org/notice/")
-            sendTwit(notice[:110] + "... " + urlviewer)
-            msgtime = datetime.strptime(date,'%d/%m/%Y     %H:%M:%S')
-            session.merge(notices(id=id, datetime=msgtime, message=notice, url=url))
-            session.merge(Downloads(url=url))
-            session.commit()
-        except Exception as e:
-            session.merge(Downloads(url=url))
-            session.commit()
-            print(traceback.format_exc())
-
 def listSCADAFiles():
     return listFiles(urls['scada'])
 
@@ -383,7 +331,6 @@ try:
     doProcess(processP5)
     doProcess(processDispatchIS)
     doProcess(processSCADA)
-    #doProcess(processNotices)
     #time.sleep(30)
 except Exception as e:
     print(traceback.format_exc())
