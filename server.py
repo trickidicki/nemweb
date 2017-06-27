@@ -54,12 +54,7 @@ class dispatchIS(Base):
      generation = Column(Float)  
      def as_dict(self):
           return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-class notices(Base):  
-     __tablename__ = 'notices'  
-     id = Column(Integer, primary_key=True)  
-     datetime = Column(DateTime)  
-     message = Column(String(500))  
-     url = Column(String(255))  
+
 class interconnect(Base):
      __tablename__ = 'interconnect-dispatchIS'
      datetime = Column(DateTime, primary_key=True)

@@ -24,7 +24,6 @@ urls = {
 	"base": "http://www.nemweb.com.au/",
 	"p5": "http://www.nemweb.com.au/Reports/CURRENT/P5_Reports/",
 	"dispatchis": "http://www.nemweb.com.au/Reports/CURRENT/DispatchIS_Reports/",
-	"notices": "http://www.nemweb.com.au/Reports/CURRENT/Market_Notice/",
 	"scada": "http://www.nemweb.com.au/Reports/CURRENT/Dispatch_SCADA/",
     "co2": "http://www.nemweb.com.au/reports/current/cdeii/"
 }
@@ -62,12 +61,6 @@ class interconnect(Base):
      exportlimit = Column(Float)
      importlimit = Column(Float)
 
-class notices(Base):
-     __tablename__ = 'notices'
-     id = Column(Integer, primary_key=True)
-     datetime = Column(DateTime)
-     message = Column(String(500))
-     url = Column(String(255))
 class DUID(Base):
      __tablename__ = 'duid'
      id = Column(String(255), primary_key=True)
