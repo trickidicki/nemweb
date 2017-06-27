@@ -9,8 +9,6 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from html.parser import HTMLParser
 from io import BytesIO, TextIOWrapper
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from zipfile import ZipFile
 from pathlib import PurePath, Path
@@ -18,6 +16,7 @@ from urllib.parse import urlparse
 import csv
 import argparse
 import pandas as pd
+from classdefs import *
 
 config = configparser.ConfigParser()
 config.read("config.cfg")
@@ -32,66 +31,6 @@ urls = {
 }
 
 engine = create_engine(config["database"]["dbstring"])
-Base = declarative_base()
-
-class Downloads(Base):
-     __tablename__ = 'downloads'
-     url = Column(String(255), primary_key=True)
-
-class P5(Base):
-     __tablename__ = 'p5'
-     datetime = Column(DateTime, primary_key=True)
-     regionid = Column(String(100), primary_key=True)
-     rrp = Column(Float)
-     demand = Column(Float)
-     generation = Column(Float)
-
-class dispatchIS(Base):
-     __tablename__ = 'dispatchIS'
-     datetime = Column(DateTime, primary_key=True)
-     regionid = Column(String(100), primary_key=True)
-     rrp = Column(Float)
-     demand = Column(Float)
-     generation = Column(Float)
-
-class interconnect(Base):
-     __tablename__ = 'interconnect-dispatchIS'
-     datetime = Column(DateTime, primary_key=True)
-     interconnectorid = Column(String(100), primary_key=True)
-     meteredmwflow = Column(Float)
-     mwflow = Column(Float)
-     mwlosses = Column(Float)
-     exportlimit = Column(Float)
-     importlimit = Column(Float)
-
-class DUID(Base):
-     __tablename__ = 'duid'
-     id = Column(String(255), primary_key=True)
-     twitter = Column(String(255))
-      
-class stationdata(Base):
-     __tablename__ = 'stationdata'
-     DUID = Column(String(255), primary_key=True)
-     regionid = Column(String(100), primary_key=True)
-     regcap = Column(Float)
-     FuelSource = Column(String(255))
-     FuelSourceDescriptior = Column(String(255))
-     Tech = Column(String(255))
-     TechDescription = Column(String(255))
-     Participant = Column(String(255))
-     StationName = Column(String(255))
-
-class DispatchSCADA(Base):
-     __tablename__ = 'DispatchSCADA'
-     DUID = Column(String(255), primary_key=True)
-     SETTLEMENTDATE = Column(DateTime, primary_key=True)
-     SCADAVALUE = Column(Float)
-
-class CO2Factor(Base):
-     __tablename__ = 'CO2Factor'
-     DUID = Column(String(255), primary_key=True)
-     ReportDate = Column(DateTime, primary_key=True)
-     Factor = Column(Float)
         
 Base.metadata.create_all(engine) 
 Session = sessionmaker(bind=engine)
