@@ -43,6 +43,13 @@
                     </a>
                 </th>
                 <th>
+                    <a href="#" ng-click="sortType = 'regionid'; sortReverse = !sortReverse">
+                        Region
+                        <span ng-show="sortType == 'regionid' && !sortReverse" class="fa fa-caret-down"></span>
+                        <span ng-show="sortType == 'regionid' && sortReverse" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
+                <th>
                     <a href="#" ng-click="sortType = 'Tech'; sortReverse = !sortReverse">
                         Generation Tech
                         <span ng-show="sortType == 'Tech' && !sortReverse" class="fa fa-caret-down"></span>
@@ -74,6 +81,7 @@
                 <tr ng-click="getDUIDHistory(x.DUID, $event)" ng-repeat="x in results | toArray | orderBy:sortType:sortReverse | filter:searchTerm" ng-if="x.SCADAVALUE || x.SCADAVALUE==0">
                     <td ng-if="x.StationName">{{ x.StationName }} ({{ x.DUID }})</td>
                     <td ng-if="!x.StationName">{{ x.DUID }}</td>
+                    <td>{{ x.regionid}}</td>
                     <td>{{ x.Tech }}</td>
                     <td>{{ x.FuelSourceDescriptior }}</td>
                     <td>{{ x.TechDescription }}</td>
